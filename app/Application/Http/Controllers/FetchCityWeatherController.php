@@ -8,6 +8,7 @@ use App\Domain\Interfaces\WeatherApiInterface;
 use App\Domain\Objects\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class FetchCityWeatherController
 {
@@ -21,9 +22,13 @@ class FetchCityWeatherController
             abort(503, 'Weather API is not available');
         }
 
-        $city = new City($request->get('city'));
+        try {
+            $city = new City($request->get('city'));
 
-        return new WeatherResource($service($api, $city));
+            return new WeatherResource($service($api, $city));
+        } catch (Throwable $exception) {
+            abort($exception->getPrevious()->getCode());
+        }
     }
 
     private function validate(Request $request): bool
