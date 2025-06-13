@@ -1,0 +1,33 @@
+{
+	"info": {
+		"_postman_id": "2a44be87-8203-45c9-b749-c3ca64dacb34",
+		"name": "WCE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Fetch current city weather",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/weather?city=Scheveningen",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "Scheveningen"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
