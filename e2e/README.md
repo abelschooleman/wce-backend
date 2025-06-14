@@ -2,4 +2,4 @@
 
 Run in Postman or in terminal with newman
 
-```newman run <path to json collection>```
+```newman run ./public-endpoints.json```
