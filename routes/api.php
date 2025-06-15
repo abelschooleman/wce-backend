@@ -8,5 +8,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/access-token', GetMapAccessTokenController::class);
 Route::get('/find-city', FindCityByNameController::class);
-Route::get('images', GetCityImagesController::class);
+Route::get('/images', GetCityImagesController::class);
 Route::get('/weather', GetCityWeatherController::class);

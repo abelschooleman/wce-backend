@@ -28,7 +28,7 @@ class UnsplashClient implements ImageApiInterface
      */
     public function fetchImageCollection(CityName $city): ImageCollection
     {
-        $searchTerm = $city->name;
+        $searchTerm = $city->value;
         $page = 1;
         $perPage = 20;
         $orientation = 'squarish';
