@@ -18,7 +18,15 @@ class GetCityWeatherController
 {
     public function __invoke(Request $request, WeatherApiInterface $api, FetchCurrentWeatherInCity $service): WeatherResource
     {
-        if (!$this->validate($request)) {
+        $validator = Validator::make($request->query(), [
+            'name' => 'required',
+            'country' => 'required',
+            'state' => 'required',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
             abort(400, 'No city name provided');
         }
 
@@ -38,17 +46,5 @@ class GetCityWeatherController
         } catch (Throwable $exception) {
             abort($exception->getPrevious()->getCode());
         }
-    }
-
-    private function validate(Request $request): bool
-    {
-        return Validator::make($request->query(), [
-            'name' => 'required',
-            'country' => 'required',
-            'state' => 'required',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ])
-            ->passes();
     }
 }

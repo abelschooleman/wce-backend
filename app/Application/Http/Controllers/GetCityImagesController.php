@@ -14,7 +14,11 @@ class GetCityImagesController
 {
     public function __invoke(Request $request, ImageApiInterface $api, FetchImageCollectionOfCity $service): ImageCollection
     {
-        if (!$this->validate($request)) {
+        $validator = Validator::make($request->query(), [
+            'city' => 'required',
+        ]);
+
+        if ($validator->fails()) {
             abort(400, 'No city name provided');
         }
 
@@ -25,13 +29,5 @@ class GetCityImagesController
         } catch (Throwable $exception) {
             abort($exception->getPrevious()->getCode());
         }
-    }
-
-    private function validate(Request $request): bool
-    {
-        return Validator::make($request->query(), [
-            'city' => 'required',
-        ])
-            ->passes();
     }
 }
