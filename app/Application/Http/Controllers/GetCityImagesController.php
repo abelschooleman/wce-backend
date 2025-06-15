@@ -5,12 +5,12 @@ namespace App\Application\Http\Controllers;
 use App\Application\Http\Resources\ImageCollection;
 use App\Application\Images\FetchImageCollectionOfCity;
 use App\Domain\Interfaces\ImageApiInterface;
-use App\Domain\Objects\City;
+use App\Domain\Objects\CityName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
-class FetchCityImagesController
+class GetCityImagesController
 {
     public function __invoke(Request $request, ImageApiInterface $api, FetchImageCollectionOfCity $service): ImageCollection
     {
@@ -19,7 +19,7 @@ class FetchCityImagesController
         }
 
         try {
-            $city = new City($request->get('city'));
+            $city = new CityName($request->get('city'));
 
             return new ImageCollection($service($api, $city)->images);
         } catch (Throwable $exception) {

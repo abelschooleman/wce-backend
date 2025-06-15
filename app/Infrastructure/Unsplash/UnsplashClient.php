@@ -3,7 +3,7 @@
 namespace App\Infrastructure\Unsplash;
 
 use App\Domain\Interfaces\ImageApiInterface;
-use App\Domain\Objects\City;
+use App\Domain\Objects\CityName;
 use App\Domain\Objects\Image;
 use App\Domain\Objects\ImageCollection;
 use App\Domain\Objects\ImageDescription;
@@ -26,7 +26,7 @@ class UnsplashClient implements ImageApiInterface
     /**
      * @throws UnsplashClientException
      */
-    public function fetchImageCollection(City $city): ImageCollection
+    public function fetchImageCollection(CityName $city): ImageCollection
     {
         $searchTerm = $city->name;
         $page = 1;
