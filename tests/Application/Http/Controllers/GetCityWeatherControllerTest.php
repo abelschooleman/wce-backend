@@ -12,7 +12,7 @@ use Mockery;
 use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
-class FetchCityWeatherControllerTest extends TestCase
+class GetCityWeatherControllerTest extends TestCase
 {
     /**
      * @throws Exception
@@ -37,7 +37,7 @@ class FetchCityWeatherControllerTest extends TestCase
                 ->andReturn($apiResponse);
         }));
 
-        $this->get('api/weather?city=TestCity')
+        $this->getJson('api/weather?name=TestCity&country=TestCountry&state=TestState&latitude=33.23&longitude=3.4')
             ->assertOk()
             ->assertExactJson([
                 'data' => [
@@ -55,7 +55,7 @@ class FetchCityWeatherControllerTest extends TestCase
 
     public function testBadRequestResponseIsReturnedWhenCityIsNotGiven(): void
     {
-        $this->get('api/weather')->assertBadRequest();
+        $this->getJson('api/weather')->assertBadRequest();
     }
 
     public function testServiceUnavailableResponseIsReturnedWhenWeatherApiIsUnavailable(): void
@@ -66,7 +66,7 @@ class FetchCityWeatherControllerTest extends TestCase
                 ->andReturn(false);
         }));
 
-        $this->get('api/weather?city=TestCity')
+        $this->getJson('api/weather?name=TestCity&country=TestCountry&state=TestState&latitude=33.23&longitude=3.4')
             ->assertServiceUnavailable();
     }
 }

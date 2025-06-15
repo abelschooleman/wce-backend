@@ -2,14 +2,14 @@
 
 namespace App\Infrastructure\OpenWeatherMap;
 
-readonly class QueryParams
+readonly class Query
 {
     public function __construct(
-        private string $query,
+        private array $params = [],
     ) {}
 
     public function toQueryString(): string
     {
-        return http_build_query(['q' => $this->query]);
+        return http_build_query($this->params);
     }
 }

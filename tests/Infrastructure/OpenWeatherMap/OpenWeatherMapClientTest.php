@@ -3,6 +3,10 @@
 namespace Tests\Infrastructure\OpenWeatherMap;
 
 use App\Domain\Objects\City;
+use App\Domain\Objects\CityName;
+use App\Domain\Objects\Coordinates;
+use App\Domain\Objects\Country;
+use App\Domain\Objects\State;
 use App\Infrastructure\OpenWeatherMap\OpenWeatherMapClient;
 use App\Infrastructure\OpenWeatherMap\OpenWeatherMapClientException;
 use Illuminate\Http\Client\Request;
@@ -15,11 +19,52 @@ class OpenWeatherMapClientTest extends TestCase
 {
     protected OpenWeatherMapClient $client;
 
+    protected City $city;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->client = new OpenWeatherMapClient();
+
+        $this->city = new City(
+            new CityName('TestCity'),
+            new Country('TCountry'),
+            new State('TState'),
+            new Coordinates(23.34, 1.23),
+        );
+    }
+
+    /**
+     * @throws OpenWeatherMapClientException
+     * @throws JsonException
+     */
+    public function testQueryForCitiesThatMatchNameIsSent(): void
+    {
+        Http::fake(
+            fn () => Http::response([
+                [
+                    'name' => 'TestCity1',
+                    'lat' => 23.324,
+                    'lon' => -2.234,
+                    'country' => 'US',
+                    'state' => 'CA',
+                ],
+                [
+                    'name' => 'TestCity2',
+                    'lat' => 34.324,
+                    'lon' => 45.234,
+                    'country' => 'BR',
+                    'state' => 'DF',
+                ],
+            ])
+        );
+
+        $this->client->findCityByName(new CityName('TestC'));
+
+        Http::assertSent(function (Request $request) {
+            return ['q' => 'TestC', 'limit' => '10', 'appid' => 'weather-api-key'] === $request->data();
+        });
     }
 
     /**
@@ -44,9 +89,11 @@ class OpenWeatherMapClientTest extends TestCase
             ])
         );
 
-        $this->client->fetchCurrentWeatherInCity(new City('TestCity'));
+        $this->client->fetchCurrentWeatherInCity($this->city);
 
-        Http::assertSent(fn (Request $request) => ['q' => 'TestCity', 'appid' => 'weather-api-key'] === $request->data());
+        Http::assertSent(function (Request $request) {
+            return ['lat' => '23.34', 'lon' => '1.23', 'appid' => 'weather-api-key'] === $request->data();
+        });
     }
 
     /**
@@ -59,7 +106,7 @@ class OpenWeatherMapClientTest extends TestCase
         $this->expectException(OpenWeatherMapClientException::class);
         $this->expectExceptionMessage('Request error when fetching data from OpenWeatherMap API: 401');
 
-        $this->client->fetchCurrentWeatherInCity(new City('TestCity'));
+        $this->client->fetchCurrentWeatherInCity($this->city);
     }
 
     /**
@@ -76,6 +123,6 @@ class OpenWeatherMapClientTest extends TestCase
             ->once()
             ->withSomeOfArgs('cb:app_infrastructure_openweathermap_openweathermapclient');
 
-        $this->client->fetchCurrentWeatherInCity(new City('TestCity'));
+        $this->client->fetchCurrentWeatherInCity($this->city);
     }
 }

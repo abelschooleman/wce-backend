@@ -4,8 +4,12 @@ namespace App\Infrastructure\OpenWeatherMap;
 
 use App\Domain\Interfaces\WeatherApiInterface;
 use App\Domain\Objects\City;
+use App\Domain\Objects\CityName;
+use App\Domain\Objects\Coordinates;
+use App\Domain\Objects\Country;
 use App\Domain\Objects\CurrentCityWeather;
 use App\Domain\Objects\Humidity;
+use App\Domain\Objects\State;
 use App\Domain\Objects\Temperature;
 use App\Domain\Objects\Weather;
 use App\Infrastructure\Utilities\CircuitBreaker\CircuitBreaker;
@@ -13,6 +17,7 @@ use App\Infrastructure\Utilities\CircuitBreaker\CircuitBreakerInterface;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use JsonException;
 
@@ -20,7 +25,7 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
 {
     use CircuitBreaker;
 
-    private const string API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+    private const string API_BASE_URL = 'https://api.openweathermap.org';
 
     private string $apiKey;
 
@@ -30,16 +35,48 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
     }
 
     /**
+     * @throws OpenWeatherMapClientException
+     * @throws JsonException
+     *
+     * @return City[]
+     */
+    public function findCityByName(CityName $cityName): array
+    {
+        $response = $this->fetch('geo/1.0/direct', new Query(['q' => $cityName->value, 'limit' => 10]));
+
+        return array_map(function (array $city) {
+            return new City(
+                new CityName($city['name']),
+                new Country($city['country']),
+                new State($city['state']),
+                new Coordinates($city['lat'], $city['lon']),
+            );
+        }, $response->data);
+    }
+
+    /**
      * @throws OpenWeatherMapClientException|JsonException
      */
     public function fetchCurrentWeatherInCity(City $city): CurrentCityWeather
     {
-        $response = $this->fetch(new QueryParams($city->name));
+        $response = $this->fetch('data/2.5/weather', new Query(['lat' => $city->coordinates->latitude, 'lon' => $city->coordinates->longitude]));
+
+        if (is_null($humidity = Arr::get($response->data, 'main.humidity'))) {
+            throw new OpenWeatherMapClientException('Humidity not set');
+        }
+
+        if (is_null($temperature = Arr::get($response->data, 'main.temp'))) {
+            throw new OpenWeatherMapClientException('Temperature not set');
+        }
+
+        if (is_null($weather = Arr::get($response->data, 'weather'))) {
+            throw new OpenWeatherMapClientException('Weather not set');
+        }
 
         return new CurrentCityWeather(
-            new Humidity($response->humidity),
-            new Temperature($response->temperature),
-            array_map(fn ($weather) => new Weather(...array_values($weather)), $response->weather),
+            new Humidity($humidity),
+            new Temperature($temperature),
+            array_map(fn ($weather) => new Weather(...array_values($weather)), $weather),
         );
     }
 
@@ -51,9 +88,9 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
     /**
      * @throws OpenWeatherMapClientException|JsonException
      */
-    private function fetch(QueryParams $params): OpenWeatherMapResponse
+    private function fetch(string $endpoint, Query $params): OpenWeatherMapResponse
     {
-        $url = sprintf('%s?%s&appid=%s', self::API_BASE_URL, $params->toQueryString(), $this->apiKey);
+        $url = sprintf('%s/%s?%s&appid=%s', self::API_BASE_URL, $endpoint, $params->toQueryString(), $this->apiKey);
 
         try {
             /* @var Response $response */

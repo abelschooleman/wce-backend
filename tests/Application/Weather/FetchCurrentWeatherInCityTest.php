@@ -5,6 +5,10 @@ namespace Tests\Application\Weather;
 use App\Application\Weather\FetchCurrentWeatherInCity;
 use App\Domain\Interfaces\WeatherApiInterface;
 use App\Domain\Objects\City;
+use App\Domain\Objects\CityName;
+use App\Domain\Objects\Coordinates;
+use App\Domain\Objects\Country;
+use App\Domain\Objects\State;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +20,7 @@ class FetchCurrentWeatherInCityTest extends TestCase
      */
     public function testCurrentWeatherInCityIsFetched(): void
     {
-        $city = new City('TestCity');
+        $city = new City(new CityName('TestCity'), new Country('TestCountry'), new State('TestState'), new Coordinates(23.34, 1.23));
 
         /* @var WeatherApiInterface&MockObject $client */
         $client = $this->createMock(WeatherApiInterface::class);
