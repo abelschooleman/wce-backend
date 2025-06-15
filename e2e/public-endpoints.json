@@ -28,6 +28,31 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Fetch images of city",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/api/images?city=Scheveningen",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"images"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "Scheveningen"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
