@@ -11,7 +11,7 @@ use Exception;
 use Mockery;
 use Tests\TestCase;
 
-class FetchCityImagesControllerTest extends TestCase
+class GetCityImagesControllerTest extends TestCase
 {
     public function testControllerReturnsCollectionOfImages(): void
     {
