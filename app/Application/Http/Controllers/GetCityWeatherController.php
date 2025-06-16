@@ -36,10 +36,10 @@ class GetCityWeatherController
 
         try {
             $city = new City(
+                new Coordinates($request->get('latitude'), $request->get('longitude')),
                 new CityName($request->get('name')),
                 new Country($request->get('country')),
                 new State($request->get('state')),
-                new Coordinates($request->get('latitude'), $request->get('longitude')),
             );
 
             return new WeatherResource($service($api, $city));

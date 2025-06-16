@@ -20,7 +20,7 @@ class FetchCurrentWeatherInCityTest extends TestCase
      */
     public function testCurrentWeatherInCityIsFetched(): void
     {
-        $city = new City(new CityName('TestCity'), new Country('TestCountry'), new State('TestState'), new Coordinates(23.34, 1.23));
+        $city = new City(new Coordinates(23.34, 1.23), new CityName('TestCity'), new Country('TestCountry'), new State('TestState'));
 
         /* @var WeatherApiInterface&MockObject $client */
         $client = $this->createMock(WeatherApiInterface::class);

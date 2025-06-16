@@ -27,10 +27,10 @@ class FindCityByNameControllerTest extends TestCase
                 ->once()
                 ->andReturn([
                     new City(
+                        new Coordinates(23.234, 2.23),
                         new CityName('TestCity'),
                         new Country('TestCountry'),
                         new State('TestState'),
-                        new Coordinates(23.234, 2.23),
                     ),
                 ]);
         }));

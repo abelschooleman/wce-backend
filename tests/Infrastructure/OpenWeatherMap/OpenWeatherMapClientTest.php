@@ -28,10 +28,10 @@ class OpenWeatherMapClientTest extends TestCase
         $this->client = new OpenWeatherMapClient();
 
         $this->city = new City(
+            new Coordinates(23.34, 1.23),
             new CityName('TestCity'),
             new Country('TCountry'),
             new State('TState'),
-            new Coordinates(23.34, 1.23),
         );
     }
 

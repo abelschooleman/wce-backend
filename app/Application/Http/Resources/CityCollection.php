@@ -15,7 +15,7 @@ class CityCollection extends ResourceCollection
                 ->map(fn (City $city) => [
                     'name' => $city->name->value,
                     'country' => $city->country->value,
-                    'state' => $city->state->value,
+                    'state' => $city->state?->value,
                     'latitude' => $city->coordinates->latitude,
                     'longitude' => $city->coordinates->longitude,
                 ]),

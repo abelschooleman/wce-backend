@@ -48,10 +48,10 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
 
         return array_map(function (array $city) {
             return new City(
+                new Coordinates($city['lat'], $city['lon']),
                 new CityName($city['name']),
                 new Country($city['country']),
-                new State($city['state']),
-                new Coordinates($city['lat'], $city['lon']),
+                isset($city['state']) ? new State($city['state']) : null,
             );
         }, $response->data);
     }
