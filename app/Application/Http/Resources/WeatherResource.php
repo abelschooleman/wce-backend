@@ -21,6 +21,7 @@ class WeatherResource extends JsonResource
             'humidity' => $this->resource->humidity->value,
             'weather' => array_map(function (Weather $weather) {
                 return [
+                    'icon' => $weather->icon,
                     'main' =>  $weather->main,
                     'description' => $weather->description,
                 ];

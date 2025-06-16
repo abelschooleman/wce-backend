@@ -27,6 +27,8 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
 
     private const string API_BASE_URL = 'https://api.openweathermap.org';
 
+    private const string ICON_BASE_URL = 'https://openweathermap.org/img/wn';
+
     private string $apiKey;
 
     public function __construct()
@@ -76,7 +78,7 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
         return new CurrentCityWeather(
             new Humidity($humidity),
             new Temperature($temperature),
-            array_map(fn ($weather) => new Weather(...array_values($weather)), $weather),
+            array_map(fn ($weather) => new Weather($weather['id'], $this->getIconUrl($weather['icon']), $weather['main'], $weather['description']), $weather),
         );
     }
 
@@ -108,5 +110,10 @@ readonly class OpenWeatherMapClient implements WeatherApiInterface, CircuitBreak
 
             throw new OpenWeatherMapClientException('Could not connect to OpenWeatherMap API', previous: $connectionException);
         }
+    }
+
+    private function getIconUrl(string $icon): string
+    {
+        return sprintf('%s/%s@2x.png', self::ICON_BASE_URL, $icon);
     }
 }

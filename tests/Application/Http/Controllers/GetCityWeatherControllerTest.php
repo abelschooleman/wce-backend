@@ -22,7 +22,7 @@ class GetCityWeatherControllerTest extends TestCase
         $apiResponse = new CurrentCityWeather(
             new Humidity(30),
             new Temperature(300),
-            [new Weather(1, 'Test','Test weather')],
+            [new Weather(1, 'Icon', 'Test','Test weather')],
         );
 
         $this->instance(WeatherApiInterface::class, Mockery::mock(WeatherApiInterface::class, function ($mock) {
@@ -45,6 +45,7 @@ class GetCityWeatherControllerTest extends TestCase
                     'humidity' => 30,
                     'weather' => [
                         [
+                            'icon' => 'Icon',
                             'main' => 'Test',
                             'description' => 'Test weather',
                         ],
